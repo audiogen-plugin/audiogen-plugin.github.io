@@ -35,15 +35,15 @@
   {"@type":"Product","name":"VENT","category":"Plugin audio VST3",
    "description":"Clipper qui sépare le grave du reste du spectre, le clippe à part et lui rend le gain pris : les crêtes sont matées sans perte de niveau. Trois pièces : AGUA, Bureau, Backrooms.",
    "brand":{"@id":"#audiogen"},"operatingSystem":"Windows 64 bits",
-   "offers":{"@type":"Offer","price":"10","priceCurrency":"EUR","availability":"https://schema.org/PreOrder"}},
+   "offers":{"@type":"Offer","price":"10","priceCurrency":"EUR","availability":"https://schema.org/InStock"}},
   {"@type":"Product","name":"ECHO","category":"Plugin audio VST3",
    "description":"Reverb bâtie sur le plateau en huit de Jon Dattorro (1997), avec égaliseur dynamique intégré. Trois pièces mesurées : Matt, Crystal, Backrooms.",
    "brand":{"@id":"#audiogen"},"operatingSystem":"Windows 64 bits",
-   "offers":{"@type":"Offer","price":"15","priceCurrency":"EUR","availability":"https://schema.org/PreOrder"}},
+   "offers":{"@type":"Offer","price":"15","priceCurrency":"EUR","availability":"https://schema.org/InStock"}},
   {"@type":"Product","name":"BBACK","category":"Plugin audio VST3",
    "description":"Multi-effet pour voix de back : couleur, filtre, delay synchronisé au tempo de l'hôte et stéréo. Trois scènes : GRUNT, MORDOR, VICE.",
    "brand":{"@id":"#audiogen"},"operatingSystem":"Windows 64 bits",
-   "offers":{"@type":"Offer","price":"10","priceCurrency":"EUR","availability":"https://schema.org/PreOrder"}},
+   "offers":{"@type":"Offer","price":"10","priceCurrency":"EUR","availability":"https://schema.org/InStock"}},
   {"@type":"FAQPage","mainEntity":[
    {"@type":"Question","name":"Avec quels logiciels les plugins AUDIOGEN fonctionnent-ils ?",
     "acceptedAnswer":{"@type":"Answer","text":"Avec tout hôte VST3 64 bits sous Windows : FL Studio, Ableton Live, Cubase, Reaper, Studio One, Bitwig, Mixcraft."}},
@@ -426,14 +426,14 @@ footer a{color:var(--fg);text-decoration:none;border-bottom:1px solid var(--line
    - prix  : ce qui s'affiche sur la page.
    - mail  : l'adresse de contact d'AUDIOGEN, quand tu l'auras créée.
              Vide, le site n'affiche aucune adresse.
-   Pense aussi, le jour où les liens sont en ligne, à passer
-   "PreOrder" à "InStock" dans le bloc de données structurées en haut
-   du fichier : c'est ce que lisent les moteurs de recherche.
+   Les liens ci-dessous sont les liens de paiement reels (production).
+   Le bloc de donnees structurees en haut du fichier est deja sur
+   "InStock", c'est ce que lisent les moteurs de recherche.
 ------------------------------------------------------------------ */
 var CONFIG = {
-  VENT:  { url: "https://buy.stripe.com/test_dRm8wPannctZdcbaYC9IQ00", prix: "10 €" },
-  ECHO:  { url: "https://buy.stripe.com/test_aFacN5gLLctZ8VV1o29IQ01", prix: "15 €" },
-  BBACK: { url: "https://buy.stripe.com/test_aFa28ranngKfb433wa9IQ02", prix: "10 €" },
+  VENT:  { url: "https://buy.stripe.com/5kQaEX5e0gsPduieT4e7m00", prix: "10 €" },
+  ECHO:  { url: "https://buy.stripe.com/cNicN57m8foL89YdP0e7m01", prix: "15 €" },
+  BBACK: { url: "https://buy.stripe.com/4gMfZhcGs3G31LAbGSe7m02", prix: "10 €" },
   mail:  "audiogen.plugin@gmail.com",
 
   /* Le serveur qui livre les fichiers. Il verifie aupres de Stripe que la
