@@ -1,1 +1,598 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="nuit">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AUDIOGEN, plugins audio VST3 : clipper, reverb et multi-effet pour les backs</title>
+<meta name="description" content="Trois plugins VST3 pour Windows à partir de 10 € : VENT (clipper qui range les basses), ECHO (reverb à plateau Dattorro) et BBACK (multi-effet pour voix de back). Un seul potard, trois pièces, réglages mesurés.">
+<meta name="author" content="AUDIOGEN">
+<meta name="robots" content="index,follow">
+<meta name="theme-color" content="#0d0d0d">
 
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AUDIOGEN">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="AUDIOGEN, plugins audio VST3 pour Windows">
+<meta property="og:description" content="Un clipper, une reverb et un multi-effet pour les backs. Un seul potard, trois pièces, tout réglé à la mesure. À partir de 10 €.">
+<meta property="og:image" content="shot-bback.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AUDIOGEN, plugins audio VST3 pour Windows">
+<meta name="twitter:description" content="Un clipper, une reverb et un multi-effet pour les backs. À partir de 10 €.">
+<meta name="twitter:image" content="shot-bback.jpg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;600;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='20' cy='32' r='11' fill='%2328c840'/%3E%3Ccircle cx='46' cy='32' r='11' fill='%23ff5f57'/%3E%3C/svg%3E">
+
+<script type="application/ld+json">
+{
+ "@context":"https://schema.org",
+ "@graph":[
+  {"@type":"Organization","@id":"#audiogen","name":"AUDIOGEN",
+   "description":"Éditeur de plugins audio VST3 : clipper, reverb et traitement de voix de back.",
+   "address":{"@type":"PostalAddress","addressLocality":"Paris","addressCountry":"FR"}},
+  {"@type":"Product","name":"VENT","category":"Plugin audio VST3",
+   "description":"Clipper qui sépare le grave du reste du spectre, le clippe à part et lui rend le gain pris : les crêtes sont matées sans perte de niveau. Trois pièces : AGUA, Bureau, Backrooms.",
+   "brand":{"@id":"#audiogen"},"operatingSystem":"Windows 64 bits",
+   "offers":{"@type":"Offer","price":"10","priceCurrency":"EUR","availability":"https://schema.org/PreOrder"}},
+  {"@type":"Product","name":"ECHO","category":"Plugin audio VST3",
+   "description":"Reverb bâtie sur le plateau en huit de Jon Dattorro (1997), avec égaliseur dynamique intégré. Trois pièces mesurées : Matt, Crystal, Backrooms.",
+   "brand":{"@id":"#audiogen"},"operatingSystem":"Windows 64 bits",
+   "offers":{"@type":"Offer","price":"15","priceCurrency":"EUR","availability":"https://schema.org/PreOrder"}},
+  {"@type":"Product","name":"BBACK","category":"Plugin audio VST3",
+   "description":"Multi-effet pour voix de back : couleur, filtre, delay synchronisé au tempo de l'hôte et stéréo. Trois scènes : GRUNT, MORDOR, VICE.",
+   "brand":{"@id":"#audiogen"},"operatingSystem":"Windows 64 bits",
+   "offers":{"@type":"Offer","price":"10","priceCurrency":"EUR","availability":"https://schema.org/PreOrder"}},
+  {"@type":"FAQPage","mainEntity":[
+   {"@type":"Question","name":"Avec quels logiciels les plugins AUDIOGEN fonctionnent-ils ?",
+    "acceptedAnswer":{"@type":"Answer","text":"Avec tout hôte VST3 64 bits sous Windows : FL Studio, Ableton Live, Cubase, Reaper, Studio One, Bitwig, Mixcraft."}},
+   {"@type":"Question","name":"Y a-t-il une version Mac ?",
+    "acceptedAnswer":{"@type":"Answer","text":"Pas encore. Les versions macOS en VST3 et AU, signées et notarisées par Apple, sont en préparation."}},
+   {"@type":"Question","name":"Que se passe-t-il quand le potard est à zéro ?",
+    "acceptedAnswer":{"@type":"Answer","text":"Le son qui sort est exactement celui qui entre, à l'échantillon près. Le plugin est vérifié sur ce point à chaque version."}}
+  ]}
+ ]
+}
+</script>
+
+<style>
+:root{
+  --green:#28c840; --red:#ff5f57;
+  --bg:#0d0d0d; --fg:#ecebe6; --mute:#85847e; --line:rgba(236,235,230,.15);
+  --shadow:0 30px 70px rgba(0,0,0,.55);
+  --sans:'Inter Tight',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
+}
+[data-theme="jour"]{
+  --bg:#ecebe6; --fg:#0d0d0d; --mute:#6c6b65; --line:rgba(13,13,13,.16);
+  --shadow:0 26px 60px rgba(13,13,13,.22);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;overflow-x:hidden;background:var(--bg);color:var(--fg);
+  font-family:var(--sans);font-size:17px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  transition:background .4s ease,color .4s ease;
+}
+body.locked{overflow:hidden}
+a{color:inherit}
+img{max-width:100%;height:auto;display:block}
+.wrap{width:min(1180px,92vw);margin:0 auto}
+
+/* ---------- the mark: the two lights, same as on every panel ---------- */
+.dots{display:flex;gap:7px;align-items:center}
+.dots i{width:13px;height:13px;border-radius:50%;display:block}
+.dots .g{background:var(--green);box-shadow:0 0 12px rgba(40,200,64,.55)}
+.dots .r{background:var(--red);box-shadow:0 0 12px rgba(255,95,87,.45)}
+.dots.sm i{width:10px;height:10px}
+
+/* ---------- the door: two lights, very large ---------- */
+.splash{
+  position:fixed;inset:0;z-index:60;background:var(--bg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(30px,6vw,60px);
+  transition:opacity .5s ease,visibility .5s;
+}
+.splash[hidden]{display:none}
+.splash.gone{opacity:0;visibility:hidden;pointer-events:none}
+.splash .mark{font-family:var(--mono);font-size:13px;letter-spacing:.42em;text-transform:uppercase;color:var(--mute)}
+.doors{display:flex;gap:clamp(26px,7vw,80px)}
+.door{
+  appearance:none;border:0;padding:0;cursor:pointer;border-radius:50%;background:var(--c);
+  width:clamp(104px,23vw,230px);aspect-ratio:1;
+  box-shadow:0 0 0 1px rgba(0,0,0,.16) inset, 0 0 60px var(--glow);
+  transition:transform .22s cubic-bezier(.2,.8,.3,1),box-shadow .22s ease;
+}
+.door.g{--c:var(--green);--glow:rgba(40,200,64,.42)}
+.door.r{--c:var(--red);--glow:rgba(255,95,87,.38)}
+.door:hover,.door:focus-visible{transform:scale(1.07);box-shadow:0 0 0 1px rgba(0,0,0,.16) inset,0 0 95px var(--glow)}
+.door:focus-visible{outline:2px solid var(--fg);outline-offset:14px}
+.splash .hint{margin:0;font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);text-align:center}
+.splash .hint b{color:var(--fg);font-weight:600}
+@media(prefers-reduced-motion:reduce){.splash,.door{transition:none}}
+
+/* ---------- top bar ---------- */
+.bar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.bar .wrap{display:flex;align-items:center;justify-content:space-between;height:66px;gap:20px}
+.brand{display:flex;align-items:center;gap:13px;text-decoration:none}
+.brand b{font-weight:900;font-size:21px;letter-spacing:-.055em}
+.theme{display:flex;gap:7px;align-items:center}
+.theme button{
+  width:14px;height:14px;border-radius:50%;border:0;padding:0;cursor:pointer;background:var(--dim);
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.18);transition:background .18s,box-shadow .18s;
+}
+.theme .g{--dim:#c3d9c7;--lit:var(--green)}
+.theme .r{--dim:#e2c6c4;--lit:var(--red)}
+[data-theme="jour"] .theme .g{--dim:#bcd3c0}
+[data-theme="nuit"] .theme .r{--dim:#5a4140}
+[data-theme="jour"] .theme .r{--dim:#e2c6c4}
+[data-theme="nuit"] .theme .g{--dim:#3c4a3e}
+.theme button[aria-pressed="true"]{background:var(--lit);box-shadow:inset 0 0 0 1px rgba(0,0,0,.2),0 0 11px var(--lit)}
+.nav{display:flex;gap:24px;font-family:var(--mono);font-size:12.5px;letter-spacing:.06em;text-transform:uppercase}
+.nav a{color:var(--mute);text-decoration:none;transition:color .15s}
+.nav a:hover{color:var(--fg)}
+@media(max-width:780px){.nav{display:none}}
+
+/* ---------- hero ---------- */
+.hero{padding:clamp(52px,10vw,120px) 0 clamp(38px,7vw,76px)}
+.hero .dots{margin-bottom:clamp(14px,2.4vw,26px)}
+.hero h1{margin:0;font-weight:900;letter-spacing:-.062em;line-height:.8;font-size:clamp(54px,14.5vw,210px)}
+.hero .lede{margin:clamp(26px,4vw,44px) 0 0;max-width:22ch;font-size:clamp(26px,4.6vw,52px);font-weight:900;line-height:1.02;letter-spacing:-.045em}
+.hero .sub{margin:22px 0 0;max-width:58ch;color:var(--mute);font-size:17.5px}
+.meta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:34px;font-family:var(--mono);font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--mute)}
+.tag{border:1px solid var(--line);border-radius:999px;padding:7px 14px}
+
+/* ---------- product ---------- */
+.prod{padding:clamp(50px,8vw,96px) 0;border-top:1px solid var(--line)}
+.prod .grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.04fr);gap:clamp(30px,5.5vw,74px);align-items:center}
+.prod.flip .shot{order:2}
+@media(max-width:880px){.prod .grid{grid-template-columns:1fr}.prod.flip .shot{order:0}}
+.shot{position:relative}
+.shot img{border-radius:22px;box-shadow:var(--shadow)}
+.shot::after{content:"";position:absolute;inset:-12% 0 auto;height:62%;z-index:-1;background:radial-gradient(60% 60% at 50% 50%,var(--acc),transparent 70%);opacity:.17;filter:blur(42px)}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--acc)}
+.prod h2{margin:12px 0 0;font-weight:900;font-size:clamp(50px,8vw,88px);line-height:.84;letter-spacing:-.06em}
+.prod .what{margin:16px 0 0;font-size:20px;font-weight:600;letter-spacing:-.015em}
+.prod p{color:var(--mute);margin:14px 0 0;max-width:46ch}
+.rooms{display:flex;flex-wrap:wrap;gap:8px;margin:24px 0 0}
+.room{font-family:var(--mono);font-size:12px;letter-spacing:.05em;border:1px solid var(--line);border-radius:7px;padding:6px 11px;background:transparent;color:var(--mute);cursor:pointer;transition:color .15s,border-color .15s,background .15s}
+.room:hover{color:var(--fg);border-color:var(--fg)}
+.room[aria-pressed="true"]{color:var(--bg);background:var(--fg);border-color:var(--fg)}
+.room:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.room i{font-style:normal;display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;vertical-align:1px}
+dl.specs{margin:26px 0 0;display:grid;grid-template-columns:auto 1fr;gap:6px 18px;font-size:14.5px}
+dl.specs dt{font-family:var(--mono);font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--mute);padding-top:3px}
+dl.specs dd{margin:0}
+.buy{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:30px 0 0}
+.price{font-weight:900;font-size:34px;letter-spacing:-.04em}
+.btn{display:inline-block;text-decoration:none;font-weight:800;font-size:16px;letter-spacing:-.01em;background:var(--fg);color:var(--bg);border:0;border-radius:11px;padding:14px 26px;cursor:pointer;transition:transform .12s ease}
+.btn:hover{transform:translateY(-1px)}
+.btn[data-soon]{background:transparent;color:var(--mute);border:1px solid var(--line);cursor:default}
+.btn[data-soon]:hover{transform:none}
+.essai{font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--mute);border:1px dashed var(--line);border-radius:7px;padding:5px 10px}
+
+/* ---------- principle + faq ---------- */
+.why,.faq{padding:clamp(54px,8vw,104px) 0;border-top:1px solid var(--line)}
+.why h2,.faq h2{margin:0 0 10px;font-weight:900;font-size:clamp(38px,6vw,68px);line-height:.9;letter-spacing:-.05em}
+.why .sub{color:var(--mute);max-width:52ch;margin:0}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(252px,1fr));gap:34px;margin-top:46px}
+.cols h3{margin:0 0 9px;font-size:18px;font-weight:800;letter-spacing:-.02em}
+.cols p{margin:0;color:var(--mute);font-size:15.5px}
+.cols .n{font-family:var(--mono);font-size:12px;color:var(--mute);letter-spacing:.1em;display:block;margin-bottom:13px}
+.faq dl{margin:40px 0 0;display:grid;gap:26px;max-width:72ch}
+.faq dt{font-weight:800;font-size:18px;letter-spacing:-.02em;margin-bottom:7px}
+.faq dd{margin:0;color:var(--mute)}
+
+/* ---------- delivery and terms ---------- */
+.apres{padding:clamp(56px,10vw,120px) 0 clamp(40px,7vw,90px)}
+.apres[hidden]{display:none}
+.apres .dots{margin-bottom:22px}
+.apres h2{margin:0 0 18px;font-weight:900;font-size:clamp(46px,8vw,86px);line-height:.84;letter-spacing:-.06em}
+.apres .sub{color:var(--mute);max-width:56ch;margin:0 0 12px}
+.dl{display:grid;gap:12px;margin:36px 0 0;max-width:520px}
+.fichier{display:flex;flex-direction:column;gap:4px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:18px 22px;transition:border-color .15s,transform .12s}
+.logo .ld,.logo .lo{color:inherit;transition:color .2s ease}
+.logo:hover .ld,.brand:hover .logo .ld{color:var(--green)}
+.logo:hover .lo,.brand:hover .logo .lo{color:var(--red)}
+.fichier[hidden]{display:none}
+.fichier:hover{border-color:var(--fg);transform:translateY(-1px)}
+.fichier b{font-weight:900;font-size:26px;letter-spacing:-.045em}
+.fichier span{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+dl.cgv{margin:38px 0 0;display:grid;gap:26px;max-width:72ch}
+dl.cgv dt{font-weight:800;font-size:17px;letter-spacing:-.02em;margin-bottom:7px}
+dl.cgv dd{margin:0;color:var(--mute)}
+
+/* ---------- footer ---------- */
+footer{border-top:1px solid var(--line);padding:46px 0 60px;color:var(--mute);font-size:14px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:22px;justify-content:space-between;align-items:flex-start}
+footer .name{color:var(--fg);font-weight:900;letter-spacing:-.05em;font-size:19px}
+footer a{color:var(--fg);text-decoration:none;border-bottom:1px solid var(--line)}
+.fine{max-width:44ch;font-size:13px;line-height:1.5}
+</style>
+</head>
+<body class="locked">
+
+<!-- ============ the door ============ -->
+<div class="splash" id="splash">
+  <div class="mark logo">AU<span class="ld">D</span>I<span class="lo">O</span>GEN</div>
+  <div class="doors">
+    <button class="door g" data-mode="jour" type="button" aria-label="Entrer, en mode jour"></button>
+    <button class="door r" data-mode="nuit" type="button" aria-label="Entrer, en mode nuit"></button>
+  </div>
+  <p class="hint">Choisis.</p>
+</div>
+
+<header class="bar">
+  <div class="wrap">
+    <a class="brand" href="#accueil" id="home">
+      <b class="logo">AU<span class="ld">D</span>I<span class="lo">O</span>GEN</b>
+    </a>
+    <nav class="nav">
+      <a href="#vent">VENT</a>
+      <a href="#echo">ECHO</a>
+      <a href="#bback">BBACK</a>
+      <a href="#principe">Approach</a>
+      <a href="#questions">FAQ</a>
+    </nav>
+    <div class="theme" role="group" aria-label="Apparence du site">
+      <button class="g" id="modeJour" type="button" aria-pressed="false" title="Mode jour" aria-label="Mode jour"></button>
+      <button class="r" id="modeNuit" type="button" aria-pressed="true" title="Mode nuit" aria-label="Mode nuit"></button>
+    </div>
+  </div>
+</header>
+
+<main>
+<section class="hero wrap" id="top">
+  <span class="dots"><i class="g"></i><i class="r"></i></span>
+  <h1 class="logo">AU<span class="ld">D</span>I<span class="lo">O</span>GEN</h1>
+  <p class="lede">Arrête de régler.<br>Mixe.</p>
+  <div class="meta-row">
+    <span class="tag">VST3 · Windows 64 bits</span>
+    <span class="tag">Mac : en préparation</span>
+  </div>
+</section>
+
+<!-- ============ VENT ============ -->
+<section class="prod" id="vent" style="--acc:#25a35a">
+  <div class="wrap grid">
+    <div class="shot"><img src="shot-vent-bureau.jpg" alt="Interface du plugin clipper VENT sur la pièce Bureau" width="1040" height="1457"></div>
+    <div>
+      <span class="kicker">01 · Clipper</span>
+      <h2>VENT</h2>
+      <p class="what">Un clipper qui range les basses avant de taper.</p>
+      <p>La plupart des clippers écrasent tout le spectre en même temps, et c'est le bas qui mange la réserve. VENT sépare le grave du reste, le clippe à part, puis lui rend le gain qu'il lui a pris : les crêtes sont matées, le niveau ne bouge pas, et le haut du spectre reste intact.</p>
+      <div class="rooms" role="group" aria-label="Pièces de VENT">
+        <button class="room" type="button" aria-pressed="false" data-shot="shot-vent-agua.jpg" data-alt="Interface du plugin clipper VENT sur la pièce AGUA"><i style="background:#2fd7ff"></i>AGUA</button>
+        <button class="room" type="button" aria-pressed="true" data-shot="shot-vent-bureau.jpg" data-alt="Interface du plugin clipper VENT sur la pièce Bureau"><i style="background:#25a35a"></i>BUREAU</button>
+        <button class="room" type="button" aria-pressed="false" data-shot="shot-vent-backrooms.jpg" data-alt="Interface du plugin clipper VENT sur la pièce Backrooms"><i style="background:#ffa21a"></i>BACKROOMS</button>
+      </div>
+      <dl class="specs">
+        <dt>Réglage</dt><dd>Un potard de mix, de 0 à 100</dd>
+        <dt>Latence</dt><dd>Aucune</dd>
+        <dt>Format</dt><dd>VST3, Windows 64 bits</dd>
+      </dl>
+      <div class="buy" data-buy="VENT"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ECHO ============ -->
+<section class="prod flip" id="echo" style="--acc:#3fa9ff">
+  <div class="wrap grid">
+    <div class="shot"><img src="shot-echo-backrooms.jpg" alt="Interface du plugin de reverb ECHO sur la pièce Backrooms" width="1040" height="1742"></div>
+    <div>
+      <span class="kicker">02 · Reverb</span>
+      <h2>ECHO</h2>
+      <p class="what">Trois pièces, et un plateau sous le capot.</p>
+      <p>La queue est construite sur le plateau en huit de Jon Dattorro, publié en 1997, l'architecture de référence des reverbs à boucle d'allpass. Longueurs de lignes, coefficients de diffusion et prises de sortie sont ceux du papier, recalés sur ta fréquence d'échantillonnage. Un égaliseur dynamique est posé dessus, pour creuser la reverb là où la voix passe.</p>
+      <div class="rooms" role="group" aria-label="Pièces d'ECHO">
+        <button class="room" type="button" aria-pressed="false" data-shot="shot-echo-matt.jpg" data-alt="Interface du plugin de reverb ECHO sur la pièce Matt"><i style="background:#ffd21a"></i>MATT · 0,34 s</button>
+        <button class="room" type="button" aria-pressed="false" data-shot="shot-echo-crystal.jpg" data-alt="Interface du plugin de reverb ECHO sur la pièce Crystal"><i style="background:#3fa9ff"></i>CRYSTAL · 5,4 s</button>
+        <button class="room" type="button" aria-pressed="true" data-shot="shot-echo-backrooms.jpg" data-alt="Interface du plugin de reverb ECHO sur la pièce Backrooms"><i style="background:#3ddc84"></i>BACKROOMS · 2,9 s</button>
+      </div>
+      <dl class="specs">
+        <dt>Réglage</dt><dd>Un potard de mix, plus l'EQ si tu y tiens</dd>
+        <dt>Pièces</dt><dd>T60 mesuré, niveau égalisé entre les trois</dd>
+        <dt>Format</dt><dd>VST3, Windows 64 bits</dd>
+      </dl>
+      <div class="buy" data-buy="ECHO"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BBACK ============ -->
+<section class="prod" id="bback" style="--acc:#d8a14a">
+  <div class="wrap grid">
+    <div class="shot"><img src="shot-bback-grunt.jpg" alt="Interface du plugin BBACK sur la scène GRUNT" width="1040" height="1480"></div>
+    <div>
+      <span class="kicker">03 · Multi-effet</span>
+      <h2>BBACK</h2>
+      <p class="what">Pour mettre les backs derrière le lead, d'un geste.</p>
+      <p>Quatre étages dans l'ordre : couleur, filtre, delay et stéréo. Le filtre est le plus important : c'est lui qui recule les voix sans les rendre sourdes. Le delay se cale tout seul sur le tempo de ton projet, sans rien à régler. Trois scènes selon ce que tu doubles : rap, crié, ou R&B.</p>
+      <div class="rooms" role="group" aria-label="Scènes de BBACK">
+        <button class="room" type="button" aria-pressed="true" data-shot="shot-bback-grunt.jpg" data-alt="Interface du plugin BBACK sur la scène GRUNT"><i style="background:#d8a14a"></i>GRUNT · 1/16</button>
+        <button class="room" type="button" aria-pressed="false" data-shot="shot-bback-mordor.jpg" data-alt="Interface du plugin BBACK sur la scène MORDOR"><i style="background:#ff5a1f"></i>MORDOR · 1/8</button>
+        <button class="room" type="button" aria-pressed="false" data-shot="shot-bback-vice.jpg" data-alt="Interface du plugin BBACK sur la scène VICE"><i style="background:#ff6ec7"></i>VICE · 1/4</button>
+      </div>
+      <dl class="specs">
+        <dt>Réglages</dt><dd>Dose et panoramique</dd>
+        <dt>Tempo</dt><dd>Lu dans l'hôte, delay synchronisé</dd>
+        <dt>Format</dt><dd>VST3, Windows 64 bits</dd>
+      </dl>
+      <div class="buy" data-buy="BBACK"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ principle ============ -->
+<section class="why" id="principe">
+  <div class="wrap">
+    <h2>Le principe</h2>
+    <p class="sub">Un plugin qui demande vingt minutes de réglage avant de sonner n'a pas fait son travail. Celui-là, on l'a fait en amont.</p>
+    <div class="cols">
+      <div><span class="n">01</span><h3>Un potard</h3><p>Un seul réglage qui compte, de 0 à 100. À 0, le son qui ressort est exactement celui qui rentre. Pas « presque », exactement.</p></div>
+      <div><span class="n">02</span><h3>Trois pièces</h3><p>Chaque plugin a trois caractères, pensés pour une matière précise. On en choisit un, on ne le bricole pas.</p></div>
+      <div><span class="n">03</span><h3>Réglé à la mesure</h3><p>Les temps de réverbération, les taux de distorsion et les niveaux ne sont pas posés à l'oreille : ils sont mesurés, et vérifiés à chaque version.</p></div>
+      <div><span class="n">04</span><h3>Même niveau, toujours</h3><p>Changer de pièce ne change pas le volume. Ce que tu entends, c'est la couleur, pas un gain qui t'embrouille.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ faq ============ -->
+<section class="faq" id="questions">
+  <div class="wrap">
+    <h2>Questions</h2>
+    <dl>
+      <div>
+        <dt>Avec quels logiciels ça marche ?</dt>
+        <dd>Avec tout hôte VST3 64 bits sous Windows : FL Studio, Ableton Live, Cubase, Reaper, Studio One, Bitwig, Mixcraft.</dd>
+      </div>
+      <div>
+        <dt>Et sur Mac ?</dt>
+        <dd>Pas encore. Les versions macOS, en VST3 et en AU, signées et notarisées par Apple, sont en préparation.</dd>
+      </div>
+      <div>
+        <dt>Qu'est-ce qui se passe quand le potard est à zéro ?</dt>
+        <dd>Rien. Le son qui sort est exactement celui qui entre, à l'échantillon près. C'est vérifié à chaque version, pas juste promis.</dd>
+      </div>
+    </dl>
+  </div>
+</section>
+</main>
+
+<!-- ============ delivery, reached after payment ============ -->
+<section class="apres" id="merci" hidden>
+  <div class="wrap">
+    <span class="dots"><i class="g"></i><i class="r"></i></span>
+    <h2>Merci.</h2>
+    <p class="sub" id="merciTexte">Ton paiement est passé. Télécharge ton plugin ici, et garde le fichier quelque part : cette page n'est pas un espace client, elle ne retrouvera pas ta commande plus tard.</p>
+    <div class="dl">
+      <a class="fichier" data-plug="VENT" href="#" download>
+        <b>VENT</b><span>Clipper · VST3 Windows · 3,4 Mo</span>
+      </a>
+      <a class="fichier" data-plug="ECHO" href="#" download>
+        <b>ECHO</b><span>Reverb · VST3 Windows · 3,4 Mo</span>
+      </a>
+      <a class="fichier" data-plug="BBACK" href="#" download>
+        <b>BBACK</b><span>Multi-effet · VST3 Windows · 3,4 Mo</span>
+      </a>
+    </div>
+    <p class="sub" style="margin-top:34px">Chaque archive contient le dossier <code>.vst3</code> et un fichier d'installation. En deux lignes : tu copies le dossier dans <code>C:\Program Files\Common Files\VST3</code>, puis tu relances la recherche de plugins dans ton logiciel.</p>
+    <p class="sub">Un souci, une question : <a href="mailto:audiogen.plugin@gmail.com">audiogen.plugin@gmail.com</a></p>
+    <p style="margin-top:34px"><a class="btn" href="#nuit">Retour au site</a></p>
+  </div>
+</section>
+
+<!-- ============ terms ============ -->
+<section class="apres" id="conditions" hidden>
+  <div class="wrap">
+    <h2>Conditions de vente</h2>
+    <dl class="cgv">
+      <div><dt>Qui vend</dt><dd>Les plugins sont édités par AUDIOGEN. La vente est encaissée par Stripe, qui agit comme vendeur officiel : c'est Stripe qui facture, qui collecte la TVA applicable dans ton pays et qui la reverse aux autorités fiscales.</dd></div>
+      <div><dt>Ce que tu achètes</dt><dd>Une licence d'utilisation personnelle et permanente du plugin, pour un nombre illimité de tes propres machines. Tu ne peux ni le revendre, ni le redistribuer, ni le partager.</dd></div>
+      <div><dt>Livraison</dt><dd>Immédiate : le lien de téléchargement s'affiche dès le paiement validé, et le reçu arrive par mail.</dd></div>
+      <div><dt>Droit de rétractation</dt><dd>Il s'agit d'un contenu numérique fourni immédiatement. En validant ton achat, tu demandes l'exécution immédiate de la livraison et tu renonces à ton droit de rétractation de quatorze jours, conformément à l'article L221-28 du code de la consommation.</dd></div>
+      <div><dt>Remboursement</dt><dd>Malgré ce qui précède : si le plugin ne fonctionne pas chez toi, écris-moi et je rembourse. Un plugin qui ne s'ouvre pas n'a aucune raison d'être payé.</dd></div>
+      <div><dt>Compatibilité</dt><dd>Les plugins sont livrés en VST3 64 bits pour Windows uniquement. Il n'y a pas de version macOS à ce jour. Vérifie ce point avant d'acheter.</dd></div>
+      <div><dt>Contact</dt><dd><a href="mailto:audiogen.plugin@gmail.com">audiogen.plugin@gmail.com</a></dd></div>
+    </dl>
+    <p style="margin-top:34px"><a class="btn" href="#nuit">Retour au site</a></p>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="wrap">
+    <div>
+      <span class="dots sm" style="margin-bottom:12px"><i class="g"></i><i class="r"></i></span>
+      <div class="name logo">AU<span class="ld">D</span>I<span class="lo">O</span>GEN</div>
+      <div style="margin-top:6px">Plugins audio · Paris</div>
+      <div style="margin-top:10px"><a href="#conditions">Conditions de vente</a></div>
+    </div>
+    <div>
+      <div style="margin-bottom:8px">Une question, un bug, une idée :</div>
+      <span id="mail">adresse de contact bientôt</span>
+    </div>
+    <p class="fine">Les plugins sont livrés en VST3 64 bits pour Windows. Les versions macOS (VST3 et AU) sont en préparation. Après l'achat, le fichier est livré par la plateforme de paiement.</p>
+  </div>
+</footer>
+
+<script>
+/* ------------------------------------------------------------------
+   À REMPLIR
+   - url   : le lien de vente de chaque plugin (Gumroad, Lemon Squeezy…).
+             Tant qu'il est vide, le bouton affiche « Bientôt » au lieu
+             d'envoyer les gens dans le vide.
+   - prix  : ce qui s'affiche sur la page.
+   - mail  : l'adresse de contact d'AUDIOGEN, quand tu l'auras créée.
+             Vide, le site n'affiche aucune adresse.
+   Pense aussi, le jour où les liens sont en ligne, à passer
+   "PreOrder" à "InStock" dans le bloc de données structurées en haut
+   du fichier : c'est ce que lisent les moteurs de recherche.
+------------------------------------------------------------------ */
+var CONFIG = {
+  VENT:  { url: "https://buy.stripe.com/test_dRm8wPannctZdcbaYC9IQ00", prix: "10 €" },
+  ECHO:  { url: "https://buy.stripe.com/test_aFacN5gLLctZ8VV1o29IQ01", prix: "15 €" },
+  BBACK: { url: "https://buy.stripe.com/test_aFa28ranngKfb433wa9IQ02", prix: "10 €" },
+  mail:  "audiogen.plugin@gmail.com",
+
+  /* Le serveur qui livre les fichiers. Il verifie aupres de Stripe que la
+     commande est bien payee avant de servir quoi que ce soit, donc les .zip
+     ne sont nulle part en libre acces. */
+  livraison: "https://fichiers.audiogen-plugin.workers.dev/dl"
+};
+
+(function(){
+  "use strict";
+  var html = document.documentElement, body = document.body, splash = document.getElementById("splash");
+
+  /* ---- the two lights drive the theme, and only one is lit ---- */
+  function setMode(mode, pushHash){
+    html.setAttribute("data-theme", mode);
+    document.getElementById("modeJour").setAttribute("aria-pressed", String(mode === "jour"));
+    document.getElementById("modeNuit").setAttribute("aria-pressed", String(mode === "nuit"));
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if(meta) meta.setAttribute("content", mode === "jour" ? "#ecebe6" : "#0d0d0d");
+    if(pushHash && location.hash.replace("#","") !== mode) location.hash = mode;
+  }
+  document.getElementById("modeJour").addEventListener("click", function(){ setMode("jour", true) });
+  document.getElementById("modeNuit").addEventListener("click", function(){ setMode("nuit", true) });
+
+  /* ---- the door: pick a light, and that light is the mode you enter in ---- */
+  function enter(mode){
+    setMode(mode, false);
+    splash.classList.add("gone");
+    body.classList.remove("locked");
+    location.hash = mode;
+    window.setTimeout(function(){ splash.hidden = true }, 600);
+  }
+  Array.prototype.forEach.call(document.querySelectorAll(".door"), function(d){
+    d.addEventListener("click", function(){ enter(d.getAttribute("data-mode")) });
+  });
+
+  /* ---- the name in the bar takes you back to the door ---- */
+  function home(){
+    splash.hidden = false;
+    void splash.offsetWidth;            /* so the fade runs again */
+    splash.classList.remove("gone");
+    body.classList.add("locked");
+    window.scrollTo(0, 0);
+    if(location.hash !== "#accueil") location.hash = "accueil";
+  }
+  document.getElementById("home").addEventListener("click", function(e){ e.preventDefault(); home() });
+
+  /* ---- two views live beside the shop: the delivery page and the terms ---- */
+  var VUES = { merci: 1, "merci-vent": 1, "merci-echo": 1, "merci-bback": 1, conditions: 1 };
+  var principal = document.querySelector("main"),
+      merci = document.getElementById("merci"),
+      cgv = document.getElementById("conditions");
+
+  function ouvrir(){
+    /* a buyer coming back from Stripe must never meet the door first */
+    splash.classList.add("gone"); splash.hidden = true; body.classList.remove("locked");
+  }
+
+  function router(){
+    var v = location.hash.replace("#","");
+    if(v === "jour" || v === "nuit") setMode(v, false);
+    var vue = VUES[v] ? v : null;
+    var estMerci = vue && vue.indexOf("merci") === 0;
+    merci.hidden = !estMerci;
+    cgv.hidden = vue !== "conditions";
+    if(estMerci) livraison(vue === "merci" ? null : vue.slice(6).toUpperCase());
+    principal.hidden = !!vue;
+    if(vue){ ouvrir(); window.scrollTo(0, 0); return true; }
+    return false;
+  }
+
+  var h = location.hash.replace("#","");
+  if(h === "jour" || h === "nuit"){ setMode(h, false); ouvrir(); }
+  router();
+  window.addEventListener("hashchange", function(){
+    if(router()) return;
+    var v = location.hash.replace("#","");
+    if(v === "accueil" && splash.hidden) home();
+  });
+
+  /* ---- prices and buy buttons ---- */
+  Array.prototype.forEach.call(document.querySelectorAll("[data-buy]"), function(box){
+    var p = CONFIG[box.getAttribute("data-buy")];
+    if(!p) return;
+    var price = document.createElement("span");
+    price.className = "price";
+    price.textContent = p.prix;
+    var btn = document.createElement("a");
+    btn.className = "btn";
+    if(p.url){
+      btn.href = p.url; btn.target = "_blank"; btn.rel = "noopener";
+      btn.textContent = "Acheter";
+      if(p.url.indexOf("buy.stripe.com/test_") !== -1){
+        var essai = document.createElement("span");
+        essai.className = "essai";
+        essai.textContent = "paiement en mode test";
+        box.appendChild(essai);
+      }
+    } else {
+      btn.href = "#questions"; btn.setAttribute("data-soon",""); btn.textContent = "Bientôt";
+    }
+    box.appendChild(price); box.appendChild(btn);
+  });
+
+  /* ---- walking through the presets: each chip swaps the shot above it ---- */
+  Array.prototype.forEach.call(document.querySelectorAll(".prod"), function(sec){
+    var img = sec.querySelector(".shot img"), chips = sec.querySelectorAll(".room");
+    if(!img || !chips.length) return;
+    Array.prototype.forEach.call(chips, function(c){
+      var pre = new Image(); pre.src = c.getAttribute("data-shot");   /* no flash on first click */
+      c.addEventListener("click", function(){
+        img.src = c.getAttribute("data-shot");
+        img.alt = c.getAttribute("data-alt");
+        Array.prototype.forEach.call(chips, function(o){ o.setAttribute("aria-pressed", String(o === c)) });
+      });
+    });
+  });
+
+  /* ---- the download links on the delivery page ----
+     On an ordinary host the plain link does the job. Inside the artifact viewer
+     a page is not allowed to hand over a file by itself, so when the host offers
+     the downloads channel we go through it instead. ---- */
+  var canal = null;
+  if (window.claude && typeof window.claude.use === "function") {
+    try { window.claude.use("downloads").then(function(d){ canal = d }, function(){}); } catch(e){}
+  }
+  /* only the plugin that was actually bought is offered, never the three */
+  function commande(){
+    var m = /[?&]session_id=(cs_[A-Za-z0-9_]+)/.exec(location.search);
+    return m ? m[1] : "";
+  }
+
+  function livraison(achat){
+    var texte = document.getElementById("merciTexte"), ref = commande();
+    Array.prototype.forEach.call(document.querySelectorAll("[data-plug]"), function(a){
+      var sien = a.getAttribute("data-plug");
+      a.hidden = !(achat && ref) || sien !== achat;
+      if(!a.hidden) a.href = CONFIG.livraison + "?session_id=" + encodeURIComponent(ref) + "&p=" + sien;
+    });
+    if(!texte) return;
+    if(achat && ref){
+      texte.textContent = "Ton paiement est passé. Télécharge ton plugin ici, et garde le fichier quelque part : cette page n'est pas un espace client, elle ne retrouvera pas ta commande plus tard.";
+    } else {
+      texte.textContent = "Ton paiement est passé. Ton reçu arrive par mail. Pour retrouver ton téléchargement, reviens par le lien du mail de confirmation : c'est lui qui prouve ton achat. Si ça coince, écris-moi et je t'envoie le fichier.";
+    }
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll("[data-plug]"), function(a){
+    a.removeAttribute("download");   /* le serveur pose lui-meme le nom du fichier */
+  });
+
+  /* ---- contact, only if there is one ---- */
+  var m = document.getElementById("mail");
+  if(CONFIG.mail){
+    var a = document.createElement("a");
+    a.href = "mailto:" + CONFIG.mail; a.textContent = CONFIG.mail;
+    m.replaceWith(a);
+  }
+})();
+</script>
+</body>
+</html>
